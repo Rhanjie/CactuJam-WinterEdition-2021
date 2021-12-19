@@ -65,11 +65,9 @@ public class Player : MonoBehaviour {
             mouseDirection.x = 0;
         }
 
-        transform.Rotate(transform.rotation.x, mouseDirection.x * rotationSpeed * Time.fixedDeltaTime, transform.rotation.z);
-
-        Debug.Log($"transform: {transform.forward}");
         var velocity = Time.fixedDeltaTime * speed * verticalMove * transform.forward;
-        Debug.Log($"velocity: {velocity}");
+        
+        transform.Rotate(transform.rotation.x, mouseDirection.x * rotationSpeed * Time.fixedDeltaTime, transform.rotation.z);
         transform.position += velocity;
     }
 
