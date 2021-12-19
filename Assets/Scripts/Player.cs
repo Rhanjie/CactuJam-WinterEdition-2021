@@ -7,10 +7,11 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public float speed = 10.0f;
     public float rotationSpeed = 100.0f;
+    public float HP = 100.0f;
+    public float maxHP = 100.0f;
 
     public Animator animator;
-
-    public ObstacleGenerator obstacleGenerator;
+    public HudManager hudManager;
 
     public Canvas canvas;
     public TextMeshProUGUI textScore;
@@ -27,7 +28,7 @@ public class Player : MonoBehaviour {
 
     private int step = 0;
     
-    void Start() {
+    private void Start() {
         rigidbodyy = GetComponent<Rigidbody>();
         canvas.gameObject.SetActive(false);
         
@@ -46,6 +47,9 @@ public class Player : MonoBehaviour {
 
         score += (1 * step) * Time.deltaTime;
         textScore.text = $"Punkty: {score:0.0}";
+        
+        hudManager.SetScore(score);
+        hudManager.SetHP(HP, maxHP);
 
         if (isGround && isClickedJump) {
             isGround = false;
@@ -71,21 +75,37 @@ public class Player : MonoBehaviour {
         transform.position += velocity;
     }
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.CompareTag("Obstacle")) {
-            canvas.gameObject.SetActive(true);
-            canvas.GetComponent<GameplayMenuManager>().Init((int)score);
+    public void DealDamage(float damage)
+    {
+        HP -= damage;
 
-            Time.timeScale = 0.0f;
+        if (HP <= 0)
+        {
+            Die();
+        }
+    }
 
+    private void Die()
+    {
+        canvas.gameObject.SetActive(true);
+        canvas.GetComponent<GameplayMenuManager>().Init((int)score);
+
+        Time.timeScale = 0.0f;
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (!other.gameObject.CompareTag("Ground") || isGround)
+        {
             return;
         }
-
-        if (isGround)
-            return;
 
         isGround = true;
         
         animator.SetBool("IsGround", true);
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        
     }
 }
