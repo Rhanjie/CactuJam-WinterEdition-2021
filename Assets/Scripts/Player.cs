@@ -27,6 +27,9 @@ public class Player : MonoBehaviour {
     private Quaternion lookRotation;
 
     private int step = 0;
+    private float timer = 0;
+    private float attacktime = 1;
+    private float velocity;
     
     private void Start() {
         rigidbodyy = GetComponent<Rigidbody>();
@@ -42,6 +45,17 @@ public class Player : MonoBehaviour {
     private void Update() {
         horizontalMove = Input.GetAxisRaw("Horizontal");
         verticalMove = Input.GetAxisRaw("Vertical");
+        
+        velocity = speed * verticalMove;
+        animator.SetFloat("Speed", velocity);
+        Debug.Log(verticalMove);
+
+        timer += Time.deltaTime;
+        if (Input.GetButton("Fire1") && timer >= attacktime)
+        {
+            animator.SetTrigger("Attack");
+            timer = 0;
+        }
 
         bool isClickedJump = Input.GetKeyUp("space");
 
@@ -69,10 +83,8 @@ public class Player : MonoBehaviour {
             mouseDirection.x = 0;
         }
 
-        var velocity = Time.fixedDeltaTime * speed * verticalMove * transform.forward;
-        
         transform.Rotate(transform.rotation.x, mouseDirection.x * rotationSpeed * Time.fixedDeltaTime, transform.rotation.z);
-        transform.position += velocity;
+        transform.position += velocity * transform.forward * Time.fixedDeltaTime;
     }
 
     public void DealDamage(float damage)
