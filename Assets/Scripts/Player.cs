@@ -6,21 +6,26 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
     public float speed = 10.0f;
-    public float rotationSpeed = 100.0f;
+    public float turnSmoothTime = 0.1f;
+    public float jumpPower = 2;
     public float HP = 100.0f;
     public float maxHP = 100.0f;
     public GameObject attackPoint;
     public LayerMask enemyLayer;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
 
+    public Transform camera;
     public Animator animator;
-    public HudManager hudManager;
+    public UiManager UiManager;
 
     public Canvas canvas;
     public TextMeshProUGUI textScore;
 
     private bool isGround = true;
 
-    private Rigidbody rigidbodyy;
+    private Rigidbody _rigidbody;
+    private CharacterController _characterController;
     private float horizontalMove;
     private float verticalMove;
 
@@ -31,7 +36,15 @@ public class Player : MonoBehaviour {
     private int step = 0;
     private float timer = 0;
     private float attacktime = 1;
-    private float velocity;
+
+    private float gravity = -9.81f;
+    private float _turnSmoothVelocity;
+    
+    private Vector3 velocity;
+
+    private HudManager _hudManager;
+
+    private Vector3 _lastSavedVelocity;
     
     private enum State
     {
@@ -40,10 +53,12 @@ public class Player : MonoBehaviour {
 
     private State _state = State.Idle;
     
-    private void Start() {
-        rigidbodyy = GetComponent<Rigidbody>();
-        canvas.gameObject.SetActive(false);
-        
+    private void Start()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+        _characterController = GetComponent<CharacterController>();
+        _hudManager = UiManager.GetHudManager();
+
         isGround = true;
         score = 0;
         animator.SetBool("IsGround", true);
@@ -55,9 +70,28 @@ public class Player : MonoBehaviour {
         horizontalMove = Input.GetAxis("Horizontal");
         verticalMove = Input.GetAxis("Vertical");
         
-        velocity = speed * verticalMove;
-        animator.SetFloat("Speed", velocity);
-        Debug.Log(verticalMove);
+        isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
+        
+        var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        
+        var clipName = currentClipInfo[0].clip.name;
+        _state = (clipName == "Idle" || clipName == "Running") ? State.Idle : State.Action;
+
+        animator.SetBool("IsGround", isGround);
+        
+        if (isGround && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        if (Input.GetButtonDown("Jump") && isGround)
+        {
+            velocity.y = Mathf.Sqrt(jumpPower * -2 * gravity);
+            _state = State.Action;
+        }
+        
+        velocity.y += gravity * Time.deltaTime;
+        _characterController.Move(velocity * Time.deltaTime);
 
         timer += Time.deltaTime;
         if (Input.GetButton("Fire1") && timer >= attacktime)
@@ -70,41 +104,38 @@ public class Player : MonoBehaviour {
         bool isClickedJump = Input.GetKeyUp("space");
 
         score += (1 * step) * Time.deltaTime;
-        textScore.text = $"Punkty: {score:0.0}";
         
-        hudManager.SetScore(score);
-        hudManager.SetHP(HP, maxHP);
-
-        if (isGround && isClickedJump) {
-            isGround = false;
-            _state = State.Action;
-            
-            animator.SetBool("IsGround", false);
-            
-            rigidbodyy.AddForce(Vector3.up * 300);
-        }
+        _hudManager.SetScore(score);
+        _hudManager.SetHP(HP, maxHP);
     }
     
-    private void FixedUpdate() {
-        Vector2 mousePos = Input.mousePosition;
-        Vector2 screenHalfSize = new Vector2(Screen.width, Screen.height) / 2f;
-
-        if (_state == State.Idle)
+    private void FixedUpdate()
+    {
+        /*if (_state == State.Action)
         {
-            var offset = 300f;
-            var mousePosition = (mousePos - screenHalfSize);
-            var mouseDirection = (mousePos - screenHalfSize).normalized;
-
-            if (mousePosition.x > -screenHalfSize.x + offset && mousePosition.x < screenHalfSize.x - offset)
+            if (!isGround)
             {
-                mouseDirection.x = 0;
+                _characterController.Move(_lastSavedVelocity * Time.deltaTime);
             }
+            return;
+        }*/
 
-            var rotationAngle = mouseDirection.x * rotationSpeed * Time.fixedDeltaTime;
+        var direction = new Vector3(horizontalMove, 0f, verticalMove).normalized;
+        animator.SetFloat("Speed", (direction * speed * Time.fixedDeltaTime).magnitude);
+        
+        if (direction.magnitude >= 0.1f)
+        {
+            var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+            var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, turnSmoothTime);
+                
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
             
-            transform.Rotate(transform.rotation.x, rotationAngle, transform.rotation.z);
-            transform.position += velocity * transform.forward * Time.fixedDeltaTime;
+            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            _lastSavedVelocity = moveDir.normalized * speed;
+            _characterController.Move(_lastSavedVelocity * Time.deltaTime);
         }
+        
+        else _lastSavedVelocity = Vector3.zero;
     }
 
     private IEnumerator Attack()
@@ -147,22 +178,8 @@ public class Player : MonoBehaviour {
 
     private void Die()
     {
-        canvas.gameObject.SetActive(true);
-        canvas.GetComponent<GameplayMenuManager>().Init((int)score);
+        UiManager.OpenSummaryPanel();
 
         Time.timeScale = 0.0f;
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        if (!other.gameObject.CompareTag("Ground") || isGround)
-        {
-            return;
-        }
-
-        isGround = true;
-        _state = State.Idle;
-        
-        animator.SetBool("IsGround", true);
     }
 }
