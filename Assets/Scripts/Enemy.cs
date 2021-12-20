@@ -22,6 +22,8 @@ public class Enemy : MonoBehaviour
     private bool attacked = false;
     private float attackTime = 0.2f;
     private float timer = 0;
+
+    private bool disabledScript = false;
     
     private Rigidbody rigidbodyy;
     
@@ -59,23 +61,29 @@ public class Enemy : MonoBehaviour
     {
         if (damage > 0)
         {
-            animator.SetTrigger("TakeDamage");
             HP -= damage;
         }
 
         if (HP <= 0)
         {
-            Die();
+            StartCoroutine(Die());
 
             return;
         }
+        
+        animator.SetTrigger("TakeDamage");
         
         rigidbodyy.AddForce(Vector3.forward * -400);
         rigidbodyy.AddForce(Vector3.up * 300);
     }
     
-    private void Die()
+    private IEnumerator Die()
     {
+        animator.SetTrigger("Die");
+        this.enabled = false;
+
+        yield return new WaitForSeconds(1.5f);
+        
         Destroy(gameObject);
     }
     
