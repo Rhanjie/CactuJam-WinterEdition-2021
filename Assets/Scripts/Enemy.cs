@@ -9,6 +9,11 @@ public class Enemy : MonoBehaviour
     public float minSpeed = 10;
     public float maxSpeed = 20;
     
+    public float HP = 10.0f;
+    public float maxHP = 10.0f;
+
+    public Animator animator;
+    
     private float power = 10;
     
     private float _speed = 12f;
@@ -44,24 +49,41 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        /*transform.position = Vector2.MoveTowards(
-            transform.position, 
-            target.transform.position, 
-            _speed * Time.deltaTime
-        );*/
-        
         var velocity = Time.fixedDeltaTime * _speed * transform.forward;
         transform.position += velocity;
         
         transform.LookAt(target.transform.position);
     }
+
+    public void DealDamage(float damage)
+    {
+        if (damage > 0)
+        {
+            animator.SetTrigger("TakeDamage");
+            HP -= damage;
+        }
+
+        if (HP <= 0)
+        {
+            Die();
+
+            return;
+        }
+        
+        rigidbodyy.AddForce(Vector3.forward * -400);
+        rigidbodyy.AddForce(Vector3.up * 300);
+    }
+    
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
     
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player") && !attacked) {
             target.DealDamage(power);
-            
-            rigidbodyy.AddForce(Vector3.forward * -400);
-            rigidbodyy.AddForce(Vector3.up * 300);
+
+            DealDamage(0);
 
             attacked = true;
 
