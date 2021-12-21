@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour
     public float maxHP = 10.0f;
 
     public Animator animator;
-    
+
     private float power = 10;
     
     private float _speed = 12f;
@@ -55,6 +55,7 @@ public class Enemy : MonoBehaviour
         transform.position += velocity;
         
         transform.LookAt(target.transform.position);
+        transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
     }
 
     public void DealDamage(float damage)
@@ -70,9 +71,12 @@ public class Enemy : MonoBehaviour
 
             return;
         }
-        
-        animator.SetTrigger("TakeDamage");
-        
+
+        if (damage > 0)
+        {
+            animator.SetTrigger("TakeDamage");
+        }
+
         rigidbodyy.AddForce(Vector3.forward * -400);
         rigidbodyy.AddForce(Vector3.up * 300);
     }

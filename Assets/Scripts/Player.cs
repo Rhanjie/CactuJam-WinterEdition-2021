@@ -21,6 +21,8 @@ public class Player : MonoBehaviour {
 
     public Canvas canvas;
     public TextMeshProUGUI textScore;
+    
+    public bool debugMode;
 
     private bool isGround = true;
 
@@ -75,7 +77,7 @@ public class Player : MonoBehaviour {
         var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
         
         var clipName = currentClipInfo[0].clip.name;
-        _state = (clipName == "Idle" || clipName == "Running") ? State.Idle : State.Action;
+        _state = (clipName == "Idle" || clipName == "Running" || clipName == "Jump") ? State.Idle : State.Action;
 
         animator.SetBool("IsGround", isGround);
         
@@ -84,13 +86,12 @@ public class Player : MonoBehaviour {
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGround)
+        if (Input.GetButtonDown("Jump") && isGround && _state == State.Idle)
         {
             velocity.y = Mathf.Sqrt(jumpPower * -2 * gravity);
-            _state = State.Action;
         }
         
-        velocity.y += gravity * Time.deltaTime;
+        velocity.y += gravity * (_state == State.Action ? 3 : 1) * Time.deltaTime;
         _characterController.Move(velocity * Time.deltaTime);
 
         timer += Time.deltaTime;
@@ -100,9 +101,7 @@ public class Player : MonoBehaviour {
             
             timer = 0;
         }
-
-        bool isClickedJump = Input.GetKeyUp("space");
-
+        
         score += (1 * step) * Time.deltaTime;
         
         _hudManager.SetScore(score);
@@ -111,14 +110,14 @@ public class Player : MonoBehaviour {
     
     private void FixedUpdate()
     {
-        /*if (_state == State.Action)
+        if (_state == State.Action)
         {
-            if (!isGround)
+            /*if (!isGround)
             {
                 _characterController.Move(_lastSavedVelocity * Time.deltaTime);
-            }
+            }*/
             return;
-        }*/
+        }
 
         var direction = new Vector3(horizontalMove, 0f, verticalMove).normalized;
         animator.SetFloat("Speed", (direction * speed * Time.fixedDeltaTime).magnitude);
@@ -143,6 +142,11 @@ public class Player : MonoBehaviour {
         animator.SetTrigger("Attack");
         _state = State.Action;
 
+        if (!isGround)
+        {
+            velocity.y *= 2;
+        }
+
         yield return new WaitForSeconds(0.5f);
 
         var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.2f, enemyLayer);
@@ -160,17 +164,13 @@ public class Player : MonoBehaviour {
             
             enemy.DealDamage(5);
         }
-        
-        yield return new WaitForSeconds(0.5f);
-        
-        _state = State.Idle;
     }
 
     public void DealDamage(float damage)
     {
         HP -= damage;
 
-        if (HP <= 0)
+        if (HP <= 0 && !debugMode)
         {
             Die();
         }
