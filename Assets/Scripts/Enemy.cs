@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour
             animator.SetTrigger("TakeDamage");
         }
 
-        rigidbodyy.AddForce(Vector3.forward * -400);
+        rigidbodyy.AddForce(transform.forward * -400);
         rigidbodyy.AddForce(Vector3.up * 300);
     }
     
