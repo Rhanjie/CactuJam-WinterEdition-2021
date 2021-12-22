@@ -19,8 +19,8 @@ TagManager:
   - Terrain
   - Ground
   - PlayerTrigger
-  - 
-  - 
+  - TerrainNotHanging
+  - EnemyCollider
   - 
   - 
   - 

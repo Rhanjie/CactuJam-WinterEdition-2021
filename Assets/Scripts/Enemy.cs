@@ -22,14 +22,14 @@ public class Enemy : MonoBehaviour
     private Player target;
 
     private bool attacked = false;
-    private float attackTime = 0.2f;
+    private float attackTime = 1.2f;
     private float timer = 0;
 
     private bool disabledScript = false;
     
     private Rigidbody rigidbodyy;
     private AudioSource _audioSource;
-    
+
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
@@ -41,6 +41,11 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (disabledScript)
+        {
+            return;
+        }
+        
         if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 2)
         {
             _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
@@ -61,6 +66,11 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (disabledScript)
+        {
+            return;
+        }
+        
         var velocity = Time.fixedDeltaTime * _speed * transform.forward;
         transform.position += velocity;
         
@@ -94,6 +104,7 @@ public class Enemy : MonoBehaviour
     private IEnumerator Die()
     {
         animator.SetTrigger("Die");
+        disabledScript = true;
         this.enabled = false;
 
         yield return new WaitForSeconds(1.5f);
@@ -102,6 +113,28 @@ public class Enemy : MonoBehaviour
     }
     
     private void OnTriggerEnter(Collider other) {
+        if (disabledScript)
+        {
+            return;
+        }
+        
+        if (other.gameObject.CompareTag("Player") && !attacked) {
+            target.DealDamage(power);
+
+            DealDamage(0);
+
+            attacked = true;
+
+            return;
+        }
+    }
+    
+    private void OnTriggerStay(Collider other) {
+        if (disabledScript)
+        {
+            return;
+        }
+        
         if (other.gameObject.CompareTag("Player") && !attacked) {
             target.DealDamage(power);
 

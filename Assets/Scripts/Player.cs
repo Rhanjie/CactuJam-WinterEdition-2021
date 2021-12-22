@@ -85,6 +85,11 @@ public class Player : MonoBehaviour {
             horizontalMove = verticalMove = 0;
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            UiManager.OpenSummaryPanel();
+        }
+
         isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
         if (!isGround)
         {
@@ -98,9 +103,7 @@ public class Player : MonoBehaviour {
         _state = (clipName == "Idle" || clipName == "Running" || clipName == "Jump") ? State.Idle : State.Action;
 
         animator.SetBool("IsGround", isGround);
-        
-        Debug.LogError(velocity.y);
-        
+
         if ((isGround || isHanging) && velocity.y < 0)
         {
             velocity.y = -2f;
@@ -115,7 +118,7 @@ public class Player : MonoBehaviour {
         _characterController.Move(velocity * Time.deltaTime);
 
         timer += Time.deltaTime;
-        if (Input.GetButton("Fire1") && timer >= attacktime)
+        if (Input.GetButton("Fire1") && timer >= attacktime && !isHanging)
         {
             StartCoroutine(Attack());
             
@@ -155,6 +158,11 @@ public class Player : MonoBehaviour {
         }
         
         else _lastSavedVelocity = Vector3.zero;
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = Vector3.zero;
     }
 
     private IEnumerator Attack()
