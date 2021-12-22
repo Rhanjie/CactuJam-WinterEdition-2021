@@ -18,6 +18,7 @@ public class Player : MonoBehaviour {
     public Transform camera;
     public Animator animator;
     public UiManager UiManager;
+    public AudioSource _hitAudioSource;
 
     public Canvas canvas;
     public TextMeshProUGUI textScore;
@@ -25,9 +26,7 @@ public class Player : MonoBehaviour {
     public bool debugMode;
 
     private bool isGround = true;
-
-    private Rigidbody _rigidbody;
-    private CharacterController _characterController;
+    
     private float horizontalMove;
     private float verticalMove;
 
@@ -44,9 +43,13 @@ public class Player : MonoBehaviour {
     
     private Vector3 velocity;
 
+    private CharacterController _characterController;
+    private AudioSource _audioSource;
     private HudManager _hudManager;
 
     private Vector3 _lastSavedVelocity;
+
+    private Vector3 _lastDirection;
     
     private enum State
     {
@@ -57,8 +60,8 @@ public class Player : MonoBehaviour {
     
     private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
         _characterController = GetComponent<CharacterController>();
+        _audioSource = GetComponent<AudioSource>();
         _hudManager = UiManager.GetHudManager();
 
         isGround = true;
@@ -69,9 +72,17 @@ public class Player : MonoBehaviour {
     }
 
     private void Update() {
-        horizontalMove = Input.GetAxis("Horizontal");
-        verticalMove = Input.GetAxis("Vertical");
-        
+        if (_state == State.Idle)
+        {
+            horizontalMove = Input.GetAxis("Horizontal");
+            verticalMove = Input.GetAxis("Vertical");
+        }
+
+        else
+        {
+            horizontalMove = verticalMove = 0;
+        }
+
         isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
         
         var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
@@ -80,6 +91,8 @@ public class Player : MonoBehaviour {
         _state = (clipName == "Idle" || clipName == "Running" || clipName == "Jump") ? State.Idle : State.Action;
 
         animator.SetBool("IsGround", isGround);
+        
+        Debug.LogError(velocity.y);
         
         if (isGround && velocity.y < 0)
         {
@@ -91,7 +104,7 @@ public class Player : MonoBehaviour {
             velocity.y = Mathf.Sqrt(jumpPower * -2 * gravity);
         }
         
-        velocity.y += gravity * (_state == State.Action ? 3 : 1) * Time.deltaTime;
+        velocity.y += gravity * (_state == State.Action ? 4 : 1) * Time.deltaTime;
         _characterController.Move(velocity * Time.deltaTime);
 
         timer += Time.deltaTime;
@@ -116,15 +129,15 @@ public class Player : MonoBehaviour {
             {
                 _characterController.Move(_lastSavedVelocity * Time.deltaTime);
             }*/
-            return;
+            //return;
         }
 
-        var direction = new Vector3(horizontalMove, 0f, verticalMove).normalized;
-        animator.SetFloat("Speed", (direction * speed * Time.fixedDeltaTime).magnitude);
+        _lastDirection = new Vector3(horizontalMove, 0f, verticalMove).normalized;
+        animator.SetFloat("Speed", (_lastDirection * speed * Time.fixedDeltaTime).magnitude);
         
-        if (direction.magnitude >= 0.1f)
+        if (_lastDirection.magnitude >= 0.1f)
         {
-            var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+            var targetAngle = Mathf.Atan2(_lastDirection.x, _lastDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
             var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, turnSmoothTime);
                 
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
@@ -144,12 +157,19 @@ public class Player : MonoBehaviour {
 
         if (!isGround)
         {
-            velocity.y *= 2;
+            velocity.y = 0;
         }
+
+        /*if (_lastDirection.magnitude >= 0.1f)
+        {
+            animator.SetLayerWeight(1, 0.65f);
+        }*/
+        
+        _hitAudioSource.Play();
 
         yield return new WaitForSeconds(0.5f);
 
-        var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.2f, enemyLayer);
+        var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer);
 
         foreach (var enemyCollider in hitEnemies)
         {
@@ -168,6 +188,11 @@ public class Player : MonoBehaviour {
 
     public void DealDamage(float damage)
     {
+        if (!_audioSource.isPlaying)
+        {
+            _audioSource.Play();
+        }
+
         HP -= damage;
 
         if (HP <= 0 && !debugMode)

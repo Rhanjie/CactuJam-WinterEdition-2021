@@ -12,6 +12,8 @@ public class Enemy : MonoBehaviour
     public float HP = 10.0f;
     public float maxHP = 10.0f;
 
+    public AudioClip[] sounds;
+
     public Animator animator;
 
     private float power = 10;
@@ -26,9 +28,11 @@ public class Enemy : MonoBehaviour
     private bool disabledScript = false;
     
     private Rigidbody rigidbodyy;
+    private AudioSource _audioSource;
     
     private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         _speed = Random.Range(minSpeed, maxSpeed);
         
@@ -37,6 +41,12 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 2)
+        {
+            _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
+            _audioSource.Play();
+        }
+        
         if (attacked)
         {
             timer += Time.deltaTime;
