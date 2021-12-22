@@ -17012,6 +17012,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textPrefab: {fileID: 680758684233934244, guid: dab2e0a56b7d16e4797c314d421a8abd, type: 3}
+  speed: 0.5
 --- !u!114 &2064094991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18949,9 +18950,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.45
-  m_Height: 2.775395
+  m_Height: 2.09
   m_Direction: 1
-  m_Center: {x: -0.004573047, y: 0.8491551, z: 0}
+  m_Center: {x: -0.004573047, y: 1.02, z: 0}
 --- !u!143 &7161603060049028568
 CharacterController:
   m_ObjectHideFlags: 0

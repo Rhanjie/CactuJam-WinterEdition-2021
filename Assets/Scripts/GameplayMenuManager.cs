@@ -19,8 +19,4 @@ public class GameplayMenuManager : MonoBehaviour {
         
         text.text = "Niestety dziadek mroz wygral...";
     }
-    public void BackToMenu() {
-        Time.timeScale = 1.0f;
-        SceneManager.LoadScene("MenuScene", LoadSceneMode.Single);
-    }
 }

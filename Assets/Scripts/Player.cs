@@ -68,8 +68,6 @@ public class Player : MonoBehaviour {
         isGround = true;
         score = 0;
         animator.SetBool("IsGround", true);
-        
-        Time.timeScale = 1.0f;
     }
 
     private void Update() {
@@ -86,7 +84,7 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            UiManager.OpenSummaryPanel();
+            UiManager.OpenMenuPanel();
         }
 
         isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
@@ -229,7 +227,5 @@ public class Player : MonoBehaviour {
     private void Die()
     {
         UiManager.OpenSummaryPanel();
-
-        Time.timeScale = 0.0f;
     }
 }
