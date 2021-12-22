@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
     public LayerMask enemyLayer;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
+    public LayerMask hangingMask;
 
     public Transform camera;
     public Animator animator;
@@ -26,6 +27,7 @@ public class Player : MonoBehaviour {
     public bool debugMode;
 
     private bool isGround = true;
+    private bool isHanging = false;
     
     private float horizontalMove;
     private float verticalMove;
@@ -84,6 +86,11 @@ public class Player : MonoBehaviour {
         }
 
         isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
+        if (!isGround)
+        {
+            isHanging = Physics.CheckSphere(transform.position, groundDistance, hangingMask);
+        }
+        else isHanging = false;
         
         var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
         
@@ -94,12 +101,12 @@ public class Player : MonoBehaviour {
         
         Debug.LogError(velocity.y);
         
-        if (isGround && velocity.y < 0)
+        if ((isGround || isHanging) && velocity.y < 0)
         {
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGround && _state == State.Idle)
+        if (Input.GetButtonDown("Jump") && (isGround || isHanging) && _state == State.Idle)
         {
             velocity.y = Mathf.Sqrt(jumpPower * -2 * gravity);
         }
