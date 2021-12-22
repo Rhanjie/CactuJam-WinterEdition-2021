@@ -78,7 +78,7 @@ public class Enemy : MonoBehaviour
         transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
     }
 
-    public void DealDamage(float damage)
+    public bool DealDamage(float damage)
     {
         if (damage > 0)
         {
@@ -89,7 +89,7 @@ public class Enemy : MonoBehaviour
         {
             StartCoroutine(Die());
 
-            return;
+            return true;
         }
 
         if (damage > 0)
@@ -99,6 +99,8 @@ public class Enemy : MonoBehaviour
 
         rigidbodyy.AddForce(transform.forward * -400);
         rigidbodyy.AddForce(Vector3.up * 300);
+
+        return false;
     }
     
     private IEnumerator Die()

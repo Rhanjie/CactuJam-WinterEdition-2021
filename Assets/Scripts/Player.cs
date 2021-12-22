@@ -20,9 +20,8 @@ public class Player : MonoBehaviour {
     public Animator animator;
     public UiManager UiManager;
     public AudioSource _hitAudioSource;
-
-    public Canvas canvas;
-    public TextMeshProUGUI textScore;
+    
+    public AnimTextManager animTextManager;
     
     public bool debugMode;
 
@@ -125,9 +124,6 @@ public class Player : MonoBehaviour {
             timer = 0;
         }
         
-        score += (1 * step) * Time.deltaTime;
-        
-        _hudManager.SetScore(score);
         _hudManager.SetHP(HP, maxHP);
     }
     
@@ -186,6 +182,7 @@ public class Player : MonoBehaviour {
 
         var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer);
 
+        var additionalScore = 0;
         foreach (var enemyCollider in hitEnemies)
         {
             if (!enemyCollider.isTrigger)
@@ -197,7 +194,20 @@ public class Player : MonoBehaviour {
                 continue;
             }
             
-            enemy.DealDamage(5);
+            var isDead = enemy.DealDamage(5);
+            if (isDead)
+            {
+                additionalScore = (additionalScore != 0)
+                    ? additionalScore * 2
+                    : 1;
+            }
+        }
+
+        if (hitEnemies.Length > 0)
+        {
+            score += additionalScore;
+            _hudManager.SetScore(score);
+            animTextManager.PushText(additionalScore);
         }
     }
 
