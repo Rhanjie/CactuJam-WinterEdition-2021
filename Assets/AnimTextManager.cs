@@ -7,6 +7,7 @@ using UnityEngine;
 public class AnimTextManager : MonoBehaviour
 {
     public TextMeshProUGUI textPrefab;
+    public float speed = 0.5f;
 
     private List<TextMeshProUGUI> addedTexts;
 
@@ -30,18 +31,20 @@ public class AnimTextManager : MonoBehaviour
 
     private void Update()
     {
-        foreach (var addedText in addedTexts)
+        for (int i =  0; i < addedTexts.Count; i++)
         {
-            addedText.transform.position += Vector3.up * Time.deltaTime;
-            var color = addedText.color;
-            color.a -= Time.deltaTime * 1;
+            var color = addedTexts[i].color;
             
-            addedText.color = color;
-
+            addedTexts[i].transform.position += speed * Vector3.up * Time.deltaTime;
+            color.a -= speed * Time.deltaTime;
+            
+            addedTexts[i].color = color;
             if (color.a <= 0)
             {
-                //Destroy(addedText.gameObject);
-                //addedTexts.Remove(addedText);
+                Destroy(addedTexts[i].gameObject);
+                addedTexts.Remove(addedTexts[i]);
+
+                i -= 1;
             }
         }
     }
