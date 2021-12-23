@@ -1315,7 +1315,7 @@ MonoBehaviour:
         m_MethodName: InitAndPlay
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 32900000, guid: 3154e09f90b16f04ead73176952d7e9d, type: 3}
+          m_ObjectArgument: {fileID: 32900000, guid: e7997277f04c38c46b52787cdb8bfedf, type: 3}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Video.VideoClip, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -3998,7 +3998,7 @@ MonoBehaviour:
         m_MethodName: InitAndPlay
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 32900000, guid: ec932eb6925af01408b01ab0a415ee6d, type: 3}
+          m_ObjectArgument: {fileID: 32900000, guid: 40670b489be8a3b4992097de008110e8, type: 3}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Video.VideoClip, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
