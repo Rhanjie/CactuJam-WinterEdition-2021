@@ -12,9 +12,21 @@ public class HudManager : MonoBehaviour
     [SerializeField] private Animator bossSection;
     [SerializeField] private Slider bossHPSlider;
 
+    private float _score;
+    private float _maxScore;
+
     public void SetScore(float score)
     {
-        textScore.text = $"Punkty: {score}";
+        _score = score;
+        
+        textScore.text = $"Punkty: {_score}/{_maxScore}";
+    }
+
+    public void UpdateMaxScore(float maxScore)
+    {
+        _maxScore = maxScore;
+        
+        textScore.text = $"Punkty: {_score}/{_maxScore}";
     }
 
     public void SetHP(float hp, float maxHp)
