@@ -193,8 +193,8 @@ public class Player : MonoBehaviour {
             /*var hitEnemies = (isGround) 
                 ? Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer)
                 : Physics.OverlapSphere(biggerAttackPoint.transform.position, 1.6f, enemyLayer);*/
-            
-            var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer)
+
+            var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.4f, enemyLayer);
 
             var additionalScore = 0;
             foreach (var enemyCollider in hitEnemies)
