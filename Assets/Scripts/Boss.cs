@@ -7,7 +7,11 @@ public class Boss : MonoBehaviour, IEnemy
     public float HP = 10.0f;
     public float maxHP = 10.0f;
 
+    public AudioClip startSound;
     public AudioClip[] sounds;
+    public AudioClip hitSound;
+    public AudioClip dieSound;
+    public AudioClip winSound;
 
     public Animator animator;
     
@@ -28,17 +32,22 @@ public class Boss : MonoBehaviour, IEnemy
         _audioSource = GetComponent<AudioSource>();
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
+    
+    private void OnEnable()
+    {
+        if (_audioSource == null)
+        {
+            _audioSource = GetComponent<AudioSource>();
+        }
+        
+        _audioSource.clip = startSound;
+        _audioSource.Play();
+    }
 
     private void Update()
     {
         //Strange bug
         animator.transform.localPosition = new Vector3(0f, -2.13f, 0f);
-        
-        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 2)
-        {
-            _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
-            _audioSource.Play();
-        }
 
         if (attacked)
         {
@@ -54,6 +63,8 @@ public class Boss : MonoBehaviour, IEnemy
         
         if (Hit)
         {
+            _audioSource.clip = hitSound;
+            _audioSource.Play();
             timerHit += Time.deltaTime;
 
             if (timerHit >= lastHitTime)
@@ -72,6 +83,12 @@ public class Boss : MonoBehaviour, IEnemy
 
     public void CastSpell()
     {
+        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) < 50)
+        {
+            _audioSource.clip = sounds[Random.Range(0, sounds.Length)];
+            _audioSource.Play();
+        }
+        
         attacked = true;
         timer = 0;
         
@@ -88,15 +105,16 @@ public class Boss : MonoBehaviour, IEnemy
         timerHit = 0;
         if (damage > 0)
         {
+            _audioSource.clip = hitSound;
+            _audioSource.Play();
+            
             HP -= damage;
             Hit = true;
-            
-            Debug.LogError("HIT BOSS!!!");
         }
 
         if (HP <= 0)
         {
-            Die();
+            StartCoroutine(Die());
 
             return true;
         }
@@ -113,7 +131,14 @@ public class Boss : MonoBehaviour, IEnemy
     {
         target.UiManager.OpenSummaryPanel();
         
-        animator.SetTrigger("Hit");
-        yield return new WaitForSeconds(5);
+        _audioSource.clip = dieSound;
+        _audioSource.Play();
+
+        yield return new WaitForSeconds(1.5f);
+        
+        _audioSource.clip = winSound;
+        _audioSource.Play();
+        
+        yield return new WaitForSeconds(4);
     }
 }

@@ -41,6 +41,22 @@ public class Enemy : MonoBehaviour, IEnemy
         _speed = Random.Range(minSpeed, maxSpeed);
         
         rigidbodyy = GetComponent<Rigidbody>();
+        
+        StartCoroutine(PlaySound());
+    }
+
+    private IEnumerator PlaySound()
+    {
+        while (!disabledScript)
+        {
+            if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 50)
+            {
+                _audioSource.clip = sounds[Random.Range(0, sounds.Length)];
+                _audioSource.Play();
+            }
+
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     private void Update()
@@ -49,13 +65,7 @@ public class Enemy : MonoBehaviour, IEnemy
         {
             return;
         }
-        
-        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 1)
-        {
-            _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
-            _audioSource.Play();
-        }
-        
+
         if (attacked)
         {
             timer += Time.deltaTime;
