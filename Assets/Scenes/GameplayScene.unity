@@ -886,6 +886,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181081961}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &194287947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 194287948}
+  m_Layer: 7
+  m_Name: SpellCastPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &194287948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194287947}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.053, y: 0.909, z: 1.205}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6845791336841419812}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &216140354
 GameObject:
   m_ObjectHideFlags: 3
@@ -1643,7 +1673,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 358802336}
-  m_LocalRotation: {x: -0.00000002435691, y: 0.85065085, z: -0.5257311, w: -0.00000003941031}
+  m_LocalRotation: {x: 0.00000002435691, y: 0.85065085, z: -0.5257311, w: 0.00000003941031}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4255,7 +4285,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 773960178}
-  m_LocalRotation: {x: -0.000000013167303, y: 0.86007285, z: -0.51017123, w: -0.000000022198114}
+  m_LocalRotation: {x: 0.000000013167297, y: 0.86007285, z: -0.51017123, w: 0.000000022198105}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -22113,7 +22143,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2563403143590425662
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22550,6 +22580,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1933335687}
+  - {fileID: 194287948}
   m_Father: {fileID: 721194403}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -22594,7 +22625,9 @@ MonoBehaviour:
   hitSound: {fileID: 8300000, guid: 3e2e6ed157ebb6449aa0f8b821717f16, type: 3}
   dieSound: {fileID: 8300000, guid: d8d4e4dde533a2f4e93703b2ec55b6b9, type: 3}
   winSound: {fileID: 8300000, guid: f4241ef1ca59a654581722d74eb1737b, type: 3}
+  spellCastPoint: {fileID: 194287948}
   animator: {fileID: 862156775}
+  spellPrefab: {fileID: 6027801264664150170, guid: 19715f15fcc062b4e8e5099e353bfb93, type: 3}
 --- !u!82 &7161603060049028553
 AudioSource:
   m_ObjectHideFlags: 0
@@ -23002,7 +23035,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7161603060338051178}
-  m_LocalRotation: {x: -0.000000024357103, y: 0.85065085, z: -0.5257311, w: -0.00000003941043}
+  m_LocalRotation: {x: 0.0000000243571, y: 0.85065085, z: -0.5257311, w: 0.00000003941043}
   m_LocalPosition: {x: 5.23, y: 5.442, z: 6.202831}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []

@@ -12,8 +12,10 @@ public class Boss : MonoBehaviour, IEnemy
     public AudioClip hitSound;
     public AudioClip dieSound;
     public AudioClip winSound;
+    public Transform spellCastPoint;
 
     public Animator animator;
+    public Spell spellPrefab;
     
     public bool Hit { private set; get; }
     
@@ -29,10 +31,16 @@ public class Boss : MonoBehaviour, IEnemy
 
     private bool disabledScript;
 
+    private List<Spell> spells;
+
+    private Quaternion _lastRotation;
+
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
+        spells = new List<Spell>();
     }
     
     private void OnEnable()
@@ -52,8 +60,13 @@ public class Boss : MonoBehaviour, IEnemy
         {
             return;
         }
-        
-        //Strange bug
+
+        if (spells.Count > 10)
+        {
+            spells.RemoveAt(0);
+        }
+
+            //Strange bug
         animator.transform.localPosition = new Vector3(0f, -2.13f, 0f);
 
         if (attacked)
@@ -90,6 +103,8 @@ public class Boss : MonoBehaviour, IEnemy
         }
         
         transform.LookAt(target.transform.position);
+        _lastRotation = transform.rotation;
+        
         transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
     }
 
@@ -105,6 +120,11 @@ public class Boss : MonoBehaviour, IEnemy
         timer = 0;
         
         animator.SetTrigger("Attack" + Random.Range(1, 2));
+
+        var nextSpell = Instantiate(spellPrefab, spellCastPoint.position, _lastRotation);
+        nextSpell.target = target;
+        
+        spells.Add(nextSpell);
     }
     
     bool IEnemy.DealDamage(float damage)
