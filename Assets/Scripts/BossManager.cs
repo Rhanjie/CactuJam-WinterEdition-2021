@@ -46,6 +46,7 @@ public class BossManager : MonoBehaviour
         boss.gameObject.SetActive(true);
         
         _animator.SetBool("isShowed", true);
+        _hudManager.ShowBossHP();
     }
 
     private void HideBoss()
@@ -55,10 +56,12 @@ public class BossManager : MonoBehaviour
         boss.gameObject.SetActive(false);
         
         _animator.SetBool("isShowed", false);
+        _hudManager.HideBossHP();
     }
 
     private void Update()
     {
+        _hudManager.UpdateBossHP(boss.HP, boss.maxHP);
         if (isShowed)
         {
             timer += Time.deltaTime;

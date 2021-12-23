@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,12 @@ public class UiManager : MonoBehaviour
 
     [HideInInspector]
     public HudManager _hudManager;
-    
+
+    private void Awake()
+    {
+        _hudManager = hudCanvas.GetComponent<HudManager>();
+    }
+
     private void Start()
     {
         AudioListener.volume = 0.5f;
@@ -21,8 +27,6 @@ public class UiManager : MonoBehaviour
         summaryPanelCanvas.gameObject.SetActive(false);
         menuPanelCanvas.gameObject.SetActive(false);
 
-        _hudManager = hudCanvas.GetComponent<HudManager>();
-        
         ToggleMouse(false);
     }
 
