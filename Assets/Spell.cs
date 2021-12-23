@@ -31,8 +31,6 @@ public class Spell : MonoBehaviour
             target.DealDamage(power);
         }
         
-        if (!other.gameObject.CompareTag("Enemy")) {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
     }
 }
