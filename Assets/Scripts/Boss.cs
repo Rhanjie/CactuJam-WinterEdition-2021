@@ -23,7 +23,7 @@ public class Boss : MonoBehaviour, IEnemy
     private AudioSource _audioSource;
     
     private bool attacked = false;
-    private float attackTime = 4f;
+    private float attackTime = 3f;
     private float timer = 0;
     
     private float lastHitTime = 1f;
@@ -66,7 +66,7 @@ public class Boss : MonoBehaviour, IEnemy
             spells.RemoveAt(0);
         }
 
-            //Strange bug
+        //Strange bug
         animator.transform.localPosition = new Vector3(0f, -2.13f, 0f);
 
         if (attacked)
@@ -79,7 +79,7 @@ public class Boss : MonoBehaviour, IEnemy
                 timer = 0;
             }
         }
-        else CastSpell();
+        else StartCoroutine(CastSpell());
         
         if (Hit)
         {
@@ -108,9 +108,9 @@ public class Boss : MonoBehaviour, IEnemy
         transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
     }
 
-    public void CastSpell()
+    public IEnumerator CastSpell()
     {
-        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) < 50)
+        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) < 20)
         {
             _audioSource.clip = sounds[Random.Range(0, sounds.Length)];
             _audioSource.Play();
@@ -120,6 +120,8 @@ public class Boss : MonoBehaviour, IEnemy
         timer = 0;
         
         animator.SetTrigger("Attack" + Random.Range(1, 2));
+
+        yield return new WaitForSeconds(0.5f);
 
         var nextSpell = Instantiate(spellPrefab, spellCastPoint.position, _lastRotation);
         nextSpell.target = target;
@@ -137,18 +139,23 @@ public class Boss : MonoBehaviour, IEnemy
         timerHit = 0;
         if (damage > 0)
         {
-            _audioSource.clip = hitSound;
-            _audioSource.Play();
-            
             HP -= damage;
             Hit = true;
         }
 
         if (HP <= 0)
         {
+            _audioSource.clip = dieSound;
+            _audioSource.Play();
+            
             StartCoroutine(Die());
 
             return true;
+        }
+        else if (damage > 0)
+        {
+            _audioSource.clip = hitSound;
+            _audioSource.Play();
         }
 
         if (damage > 0)
@@ -161,9 +168,6 @@ public class Boss : MonoBehaviour, IEnemy
     
     private IEnumerator Die()
     {
-        _audioSource.clip = dieSound;
-        _audioSource.Play();
-        
         //die animation and dispose all enemies
 
         yield return new WaitForSeconds(5);

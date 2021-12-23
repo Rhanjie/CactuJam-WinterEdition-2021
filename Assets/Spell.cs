@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,14 +24,15 @@ public class Spell : MonoBehaviour
             return;
         }
     }
-    
-    private void OnTriggerStay(Collider other) {
+
+    private void OnCollisionEnter(Collision other)
+    {
         if (other.gameObject.CompareTag("Player")) {
             target.DealDamage(power);
-            
-            Destroy(this);
-
-            return;
+        }
+        
+        if (!other.gameObject.CompareTag("Enemy")) {
+            Destroy(gameObject);
         }
     }
 }

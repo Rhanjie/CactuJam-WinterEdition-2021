@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour, IEnemy
 
     public Animator animator;
 
-    private float power = 10;
+    public float power = 1;
     
     private float _speed = 12f;
     private Player target;
