@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IEnemy
 {
     public float minSpeed = 10;
     public float maxSpeed = 20;
@@ -22,8 +22,12 @@ public class Enemy : MonoBehaviour
     private Player target;
 
     private bool attacked = false;
+    public bool Hit { private set; get; }
     private float attackTime = 1.2f;
     private float timer = 0;
+    
+    private float lastHitTime = 1f;
+    private float timerHit = 0;
 
     private bool disabledScript = false;
     
@@ -46,7 +50,7 @@ public class Enemy : MonoBehaviour
             return;
         }
         
-        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 2)
+        if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 1)
         {
             _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
             _audioSource.Play();
@@ -60,6 +64,17 @@ public class Enemy : MonoBehaviour
             {
                 attacked = false;
                 timer = 0;
+            }
+        }
+        
+        if (Hit)
+        {
+            timerHit += Time.deltaTime;
+
+            if (timerHit >= lastHitTime)
+            {
+                Hit = false;
+                timerHit = 0;
             }
         }
     }
@@ -80,9 +95,17 @@ public class Enemy : MonoBehaviour
 
     public bool DealDamage(float damage)
     {
+        if (Hit && damage > 0)
+        {
+            return false;
+        }
+        
+        timerHit = 0;
+
         if (damage > 0)
         {
             HP -= damage;
+            Hit = true;
         }
 
         if (HP <= 0)

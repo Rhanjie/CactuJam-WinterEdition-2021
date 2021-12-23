@@ -7,23 +7,28 @@ public class BossManager : MonoBehaviour
 {
     public UiManager uiManager;
     private HudManager _hudManager;
+    private Animator _animator;
     
-    public Enemy boss;
+    public Boss boss;
 
 
-    public int pointsToActivate = 50;
-
+    public float pointsToActivate = 50;
+    public float secondsToHide = 15;
 
     private bool isShowed = false;
     private float timer = 0;
-    private float secondsToHide = 15;
 
     private void Start()
     {
+        _animator = GetComponent<Animator>();
         _hudManager = uiManager.GetHudManager();
+        
+        timer = 0;
+        isShowed = false;
+        boss.gameObject.SetActive(false);
     }
 
-    public void CheckLimit(int points)
+    public void CheckLimit(float points)
     {
         if (!isShowed && points >= pointsToActivate)
         {
@@ -37,12 +42,19 @@ public class BossManager : MonoBehaviour
     {
         timer = 0;
         isShowed = true;
+        
+        boss.gameObject.SetActive(true);
+        
+        _animator.SetBool("isShowed", true);
     }
 
     private void HideBoss()
     {
         timer = 0;
         isShowed = false;
+        boss.gameObject.SetActive(false);
+        
+        _animator.SetBool("isShowed", false);
     }
 
     private void Update()

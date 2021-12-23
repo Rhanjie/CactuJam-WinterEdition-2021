@@ -22,6 +22,7 @@ public class Player : MonoBehaviour {
     public AudioSource _hitAudioSource;
     
     public AnimTextManager animTextManager;
+    public BossManager bossManager;
     
     public bool debugMode;
 
@@ -58,6 +59,8 @@ public class Player : MonoBehaviour {
     }
 
     private State _state = State.Idle;
+
+    private String _lastClipName;
     
     private void Start()
     {
@@ -86,6 +89,8 @@ public class Player : MonoBehaviour {
         {
             UiManager.OpenMenuPanel();
         }
+        
+        bossManager.CheckLimit(score);
 
         isGround = Physics.CheckSphere(transform.position, groundDistance, groundMask);
         if (!isGround)
@@ -95,11 +100,12 @@ public class Player : MonoBehaviour {
         else isHanging = false;
         
         var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        _lastClipName = currentClipInfo[0].clip.name;
         
-        var clipName = currentClipInfo[0].clip.name;
-        _state = (clipName == "Idle" || clipName == "Running" || clipName == "Jump") ? State.Idle : State.Action;
+        _state = (_lastClipName == "Idle" || _lastClipName == "Running" || _lastClipName == "Jump") ? State.Idle : State.Action;
 
         animator.SetBool("IsGround", isGround);
+        animator.SetBool("isHanging", isHanging);
 
         if ((isGround || isHanging) && velocity.y < 0)
         {
@@ -177,36 +183,60 @@ public class Player : MonoBehaviour {
         _hitAudioSource.Play();
 
         yield return new WaitForSeconds(0.5f);
+        
+        var currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        _lastClipName = currentClipInfo[0].clip.name;
 
-        var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer);
-
-        var additionalScore = 0;
-        foreach (var enemyCollider in hitEnemies)
+        do
         {
-            if (!enemyCollider.isTrigger)
-                continue;
-            
-            var enemy = enemyCollider.GetComponent<Enemy>();
-            if (enemy == null)
-            {
-                continue;
-            }
-            
-            var isDead = enemy.DealDamage(5);
-            if (isDead)
-            {
-                additionalScore = (additionalScore != 0)
-                    ? additionalScore * 2
-                    : 1;
-            }
-        }
+            var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer);
 
-        if (hitEnemies.Length > 0)
-        {
-            score += additionalScore;
-            _hudManager.SetScore(score);
-            animTextManager.PushText(additionalScore);
-        }
+            var additionalScore = 0;
+            foreach (var enemyCollider in hitEnemies)
+            {
+                if (!enemyCollider.isTrigger)
+                    continue;
+
+                var enemyBase = enemyCollider.GetComponent<IEnemy>();
+                if (enemyBase == null)
+                {
+                    continue;
+                }
+
+                //Ignore hit enemy
+                if (enemyBase is Enemy {Hit: true})
+                {
+                    continue;
+                }
+
+                var isDead = enemyBase.DealDamage(5);
+                if (isDead)
+                {
+                    if (enemyBase is Boss)
+                    {
+                        UiManager.OpenSummaryPanel();
+                    }
+
+                    else
+                        additionalScore = (additionalScore != 0)
+                            ? additionalScore * 2
+                            : 1;
+                }
+            }
+
+            if (hitEnemies.Length > 0)
+            {
+                score += additionalScore;
+                _hudManager.SetScore(score);
+                animTextManager.PushText(additionalScore);
+            }
+
+            yield return new WaitForSeconds(0.05f);
+            Debug.Log(_lastClipName);
+            
+        } while (_lastClipName == "Standing Melee Attack Downward");
+
+        //while (!isGround && _state == State.Action);
     }
 
     public void DealDamage(float damage)
