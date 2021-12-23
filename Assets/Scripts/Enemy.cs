@@ -101,7 +101,6 @@ public class Enemy : MonoBehaviour, IEnemy
         }
         
         timerHit = 0;
-
         if (damage > 0)
         {
             HP -= damage;

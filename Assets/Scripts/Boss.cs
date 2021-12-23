@@ -11,12 +11,17 @@ public class Boss : MonoBehaviour, IEnemy
 
     public Animator animator;
     
+    public bool Hit { private set; get; }
+    
     private Player target;
     private AudioSource _audioSource;
     
     private bool attacked = false;
-    private float attackTime = 2f;
+    private float attackTime = 4f;
     private float timer = 0;
+    
+    private float lastHitTime = 1f;
+    private float timerHit = 0;
 
     private void Start()
     {
@@ -26,6 +31,9 @@ public class Boss : MonoBehaviour, IEnemy
 
     private void Update()
     {
+        //Strange bug
+        animator.transform.localPosition = new Vector3(0f, -2.13f, 0f);
+        
         if (sounds.Length > 0 && _audioSource.isPlaying == false && Random.Range(0, 100) <= 2)
         {
             _audioSource.clip = sounds[Random.Range(0, sounds.Length - 1)];
@@ -43,6 +51,17 @@ public class Boss : MonoBehaviour, IEnemy
             }
         }
         else CastSpell();
+        
+        if (Hit)
+        {
+            timerHit += Time.deltaTime;
+
+            if (timerHit >= lastHitTime)
+            {
+                Hit = false;
+                timerHit = 0;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -61,14 +80,23 @@ public class Boss : MonoBehaviour, IEnemy
     
     bool IEnemy.DealDamage(float damage)
     {
+        if (Hit && damage > 0)
+        {
+            return false;
+        }
+        
+        timerHit = 0;
         if (damage > 0)
         {
             HP -= damage;
+            Hit = true;
+            
+            Debug.LogError("HIT BOSS!!!");
         }
 
         if (HP <= 0)
         {
-            StartCoroutine(Die());
+            Die();
 
             return true;
         }
@@ -83,11 +111,9 @@ public class Boss : MonoBehaviour, IEnemy
     
     private IEnumerator Die()
     {
-        animator.SetTrigger("Die");
-        this.enabled = false;
-
-        yield return new WaitForSeconds(1.5f);
+        target.UiManager.OpenSummaryPanel();
         
-        Destroy(gameObject);
+        animator.SetTrigger("Hit");
+        yield return new WaitForSeconds(5);
     }
 }
