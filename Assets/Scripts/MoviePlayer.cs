@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,9 +10,20 @@ public class MoviePlayer : MonoBehaviour
 {
     public RawImage rawImage;
     public VideoPlayer videoPlayer;
+    
+    private List<String> videoUrls;
 
     public Button[] toggleButtons;
     public TextMeshProUGUI[] texts;
+
+    public void Start()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            var path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{i + 1}.mp4");
+            videoUrls.Add(path);
+        }
+    }
 
     public void InteractWithButton(Button button)
     {
@@ -33,9 +45,9 @@ public class MoviePlayer : MonoBehaviour
         text.gameObject.SetActive(true);
     }
 
-    public void InitAndPlay(VideoClip clip)
+    public void InitAndPlay(int index)
     {
-        videoPlayer.clip = clip;
+        videoPlayer.url = videoUrls[index];
 
         StartCoroutine(Play());
     }

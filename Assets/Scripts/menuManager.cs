@@ -27,6 +27,13 @@ public class menuManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
+    
+    public void UpdateVolume(float value)
+    {
+        AudioListener.volume = volumeSlider.value;
+        PlayerPrefs.SetFloat("GlobalVolume", volumeSlider.value);
+        PlayerPrefs.Save();
+    }
 
     public void StartGame() {
         SceneManager.LoadScene("GameplayScene", LoadSceneMode.Single);
