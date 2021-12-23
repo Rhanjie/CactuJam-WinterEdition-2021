@@ -10,12 +10,11 @@ public class BossManager : MonoBehaviour
     private Animator _animator;
     
     public Boss boss;
-
-
+    
     public float pointsToActivate = 50;
 
     private float currentPointsToActivate;
-    public float secondsToHide = 15;
+    public float secondsToHide = 20;
 
     private bool isShowed = false;
     private float timer = 0;

@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  power: 10
+  power: 5
   target: {fileID: 0}
 --- !u!135 &390266769185998179
 SphereCollider:

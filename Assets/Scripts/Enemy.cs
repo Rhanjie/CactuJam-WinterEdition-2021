@@ -135,7 +135,7 @@ public class Enemy : MonoBehaviour, IEnemy
         return false;
     }
     
-    private IEnumerator Die()
+    public IEnumerator Die()
     {
         animator.SetTrigger("Die");
         disabledScript = true;

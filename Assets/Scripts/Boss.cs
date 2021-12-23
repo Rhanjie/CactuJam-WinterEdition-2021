@@ -17,6 +17,8 @@ public class Boss : MonoBehaviour, IEnemy
     public Animator animator;
     public Spell spellPrefab;
     
+    public List<MonsterSpawner> monsterSpawners;
+    
     public bool Hit { private set; get; }
     
     private Player target;
@@ -169,6 +171,11 @@ public class Boss : MonoBehaviour, IEnemy
     private IEnumerator Die()
     {
         //die animation and dispose all enemies
+
+        foreach (var monsterSpawner in monsterSpawners)
+        {
+            monsterSpawner.DestroyAll();
+        }
 
         yield return new WaitForSeconds(5);
         
