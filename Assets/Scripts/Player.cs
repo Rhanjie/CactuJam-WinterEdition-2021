@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
     public float HP = 100.0f;
     public float maxHP = 100.0f;
     public GameObject attackPoint;
+    public GameObject biggerAttackPoint;
     public LayerMask enemyLayer;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -189,7 +190,11 @@ public class Player : MonoBehaviour {
 
         do
         {
-            var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer);
+            /*var hitEnemies = (isGround) 
+                ? Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer)
+                : Physics.OverlapSphere(biggerAttackPoint.transform.position, 1.6f, enemyLayer);*/
+            
+            var hitEnemies = Physics.OverlapSphere(attackPoint.transform.position, 1.3f, enemyLayer)
 
             var additionalScore = 0;
             foreach (var enemyCollider in hitEnemies)
@@ -212,14 +217,17 @@ public class Player : MonoBehaviour {
                 var isDead = enemyBase.DealDamage(5);
                 if (isDead)
                 {
-                    additionalScore = (additionalScore != 0)
-                        ? additionalScore * 2
-                        : 1;
+                    additionalScore += 1;
                 }
             }
 
             if (hitEnemies.Length > 0)
             {
+                if (additionalScore > 4)
+                    additionalScore += 2;
+                else if (additionalScore > 2)
+                    additionalScore += 1;
+
                 score += additionalScore;
                 _hudManager.SetScore(score);
                 animTextManager.PushText(additionalScore);
