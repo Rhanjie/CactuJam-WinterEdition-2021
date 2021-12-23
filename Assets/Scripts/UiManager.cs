@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
 {
     [SerializeField] private Canvas hudCanvas;
     [SerializeField] private Canvas summaryPanelCanvas;
     [SerializeField] private Canvas menuPanelCanvas;
+    
+    [SerializeField] private Slider volumeSlider;
 
     [HideInInspector]
     public HudManager _hudManager;
@@ -20,7 +23,18 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
-        AudioListener.volume = 0.5f;
+        if (!PlayerPrefs.HasKey("GlobalVolume"))
+        {
+            volumeSlider.value = 0.5f;
+
+            PlayerPrefs.SetFloat("GlobalVolume", 0.5f);
+            PlayerPrefs.Save();
+        }
+        
+        else volumeSlider.value =  PlayerPrefs.GetFloat("GlobalVolume");
+        
+        AudioListener.volume = volumeSlider.value;
+
         Time.timeScale = 1.0f;
         
         hudCanvas.gameObject.SetActive(true);
@@ -28,6 +42,13 @@ public class UiManager : MonoBehaviour
         menuPanelCanvas.gameObject.SetActive(false);
 
         ToggleMouse(false);
+    }
+
+    public void UpdateVolume(float value)
+    {
+        AudioListener.volume = volumeSlider.value;
+        PlayerPrefs.SetFloat("GlobalVolume", volumeSlider.value);
+        PlayerPrefs.Save();
     }
 
     public void OpenSummaryPanel()
