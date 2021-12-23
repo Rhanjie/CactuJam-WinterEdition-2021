@@ -27,6 +27,8 @@ public class Boss : MonoBehaviour, IEnemy
     private float lastHitTime = 1f;
     private float timerHit = 0;
 
+    private bool disabledScript;
+
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
@@ -46,6 +48,11 @@ public class Boss : MonoBehaviour, IEnemy
 
     private void Update()
     {
+        if (disabledScript)
+        {
+            return;
+        }
+        
         //Strange bug
         animator.transform.localPosition = new Vector3(0f, -2.13f, 0f);
 
@@ -77,6 +84,11 @@ public class Boss : MonoBehaviour, IEnemy
 
     private void FixedUpdate()
     {
+        if (disabledScript)
+        {
+            return;
+        }
+        
         transform.LookAt(target.transform.position);
         transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
     }
@@ -129,16 +141,16 @@ public class Boss : MonoBehaviour, IEnemy
     
     private IEnumerator Die()
     {
-        target.UiManager.OpenSummaryPanel();
-        
         _audioSource.clip = dieSound;
         _audioSource.Play();
+        
+        //die animation and dispose all enemies
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(5);
         
         _audioSource.clip = winSound;
         _audioSource.Play();
         
-        yield return new WaitForSeconds(4);
+        target.UiManager.OpenSummaryPanel(true, target.score);
     }
 }

@@ -33,7 +33,7 @@ public class Player : MonoBehaviour {
     private float verticalMove;
 
     private Vector3 offset;
-    private float score;
+    public int score { private set; get; }
     private Quaternion lookRotation;
 
     private int step = 0;
@@ -212,15 +212,9 @@ public class Player : MonoBehaviour {
                 var isDead = enemyBase.DealDamage(5);
                 if (isDead)
                 {
-                    if (enemyBase is Boss)
-                    {
-                        UiManager.OpenSummaryPanel();
-                    }
-
-                    else
-                        additionalScore = (additionalScore != 0)
-                            ? additionalScore * 2
-                            : 1;
+                    additionalScore = (additionalScore != 0)
+                        ? additionalScore * 2
+                        : 1;
                 }
             }
 
@@ -256,6 +250,6 @@ public class Player : MonoBehaviour {
 
     private void Die()
     {
-        UiManager.OpenSummaryPanel();
+        UiManager.OpenSummaryPanel(false, score);
     }
 }

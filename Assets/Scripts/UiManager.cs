@@ -51,11 +51,12 @@ public class UiManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public void OpenSummaryPanel()
+    public void OpenSummaryPanel(bool isWin, int score)
     {
         Time.timeScale = 0.0f;
         
         summaryPanelCanvas.gameObject.SetActive(true);
+        summaryPanelCanvas.GetComponent<GameplayMenuManager>().Init(isWin, score);
 
         ToggleMouse(true);
     }
