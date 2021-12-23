@@ -4534,10 +4534,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1108374985}
         m_TargetAssemblyTypeName: MoviePlayer, Assembly-CSharp
         m_MethodName: InitAndPlay
-        m_Mode: 2
+        m_Mode: 3
         m_Arguments:
-          m_ObjectArgument: {fileID: 32900000, guid: ec932eb6925af01408b01ab0a415ee6d, type: 3}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Video.VideoClip, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

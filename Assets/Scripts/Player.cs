@@ -234,8 +234,6 @@ public class Player : MonoBehaviour {
             }
 
             yield return new WaitForSeconds(0.05f);
-            Debug.Log(_lastClipName);
-            
         } while (_lastClipName == "Standing Melee Attack Downward");
 
         //while (!isGround && _state == State.Action);

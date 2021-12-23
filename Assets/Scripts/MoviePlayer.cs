@@ -11,17 +11,19 @@ public class MoviePlayer : MonoBehaviour
     public RawImage rawImage;
     public VideoPlayer videoPlayer;
     
-    private List<String> videoUrls;
+    private List<string> _videoUrls;
 
     public Button[] toggleButtons;
     public TextMeshProUGUI[] texts;
 
-    public void Start()
+    private void Awake()
     {
+        _videoUrls = new List<string>();
+        
         for (int i = 0; i < 4; i++)
         {
             var path = System.IO.Path.Combine(Application.streamingAssetsPath, $"{i + 1}.mp4");
-            videoUrls.Add(path);
+            _videoUrls.Add(path);
         }
     }
 
@@ -47,7 +49,7 @@ public class MoviePlayer : MonoBehaviour
 
     public void InitAndPlay(int index)
     {
-        videoPlayer.url = videoUrls[index];
+        videoPlayer.url = _videoUrls[index];
 
         StartCoroutine(Play());
     }
